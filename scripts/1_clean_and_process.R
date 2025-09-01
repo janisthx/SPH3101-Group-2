@@ -53,7 +53,6 @@ boxplot(bdhs_interest$head_age_clean,ylab="Age", main="Boxplot of Age of Househo
 bdhs_interest$marital_status <- factor(bdhs_interest$marital_status, levels = c(0,1,2,3,4,5), labels = c("Never in union","Married","Co-living","Widowed","Divorced","Separated"))
 summary(bdhs_interest$marital_status)
 
-
 #B4 sex of child
 
 bdhs_interest$child_sex <- factor(bdhs_interest$child_sex, levels = c(1,2), labels=c("Male", "Female"))
@@ -89,4 +88,4 @@ boxplot(bdhs_interest$child_height,ylab="Height (cm)", main="Boxplot of Height o
 boxplot.stats(bdhs_interest$child_height)$out 
 bdhs_interest$child_height_clean <- bdhs_interest$child_height
 bdhs_interest$child_height_clean[bdhs_interest$child_height_clean %in% boxplot.stats(bdhs_interest$child_height)$out] <- NA
-boxplot(bdhs_interest$child_height_clean,ylab="Height (cm)", main="Boxplot of Weight of Child",col = 'lavender')
+boxplot(bdhs_interest$child_height_clean,ylab="Height (cm)", main="Boxplot of Height of Child",col = 'lavender')
