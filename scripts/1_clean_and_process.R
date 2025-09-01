@@ -2,7 +2,7 @@ bdhs <- read.csv('data/bdhs.csv')
 
 #pull variables of interest
 
-bdhs_interest <- bdhs[, c("V102", "V150", "V151", "V152", "B4", "B19", "HW2", "HW3")] 
+bdhs_interest <- bdhs[, c("V102", "V150", "V151", "V152", "V501", "B4", "B19", "HW2", "HW3")] 
 
 #rename variables
 
@@ -10,6 +10,7 @@ names(bdhs_interest)[names(bdhs_interest) == "V102"] <- "residence"
 names(bdhs_interest)[names(bdhs_interest) == "V150"] <- "relationship"
 names(bdhs_interest)[names(bdhs_interest) == "V151"] <- "head_sex"
 names(bdhs_interest)[names(bdhs_interest) == "V152"] <- "head_age"
+names(bdhs_interest)[names(bdhs_interest) == "V501"] <- "marital_status"
 names(bdhs_interest)[names(bdhs_interest) == "B4"] <- "child_sex"
 names(bdhs_interest)[names(bdhs_interest) == "B19"] <- "child_age_months"
 names(bdhs_interest)[names(bdhs_interest) == "HW2"] <- "child_weight"
@@ -47,6 +48,11 @@ boxplot.stats(bdhs_interest$head_age)$out
 bdhs_interest$head_age_clean <- bdhs_interest$head_age
 bdhs_interest$head_age_clean[bdhs_interest$head_age_clean %in% boxplot.stats(bdhs_interest$head_age)$out] <- NA
 boxplot(bdhs_interest$head_age_clean,ylab="Age", main="Boxplot of Age of Household Head",col = 'lavender')
+
+#V501 marital status
+bdhs_interest$marital_status <- factor(bdhs_interest$marital_status, levels = c(0,1,2,3,4,5), labels = c("Never in union","Married","Co-living","Widowed","Divorced","Separated"))
+summary(bdhs_interest$marital_status)
+
 
 #B4 sex of child
 
