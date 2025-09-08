@@ -70,26 +70,26 @@ boxplot(bdhs_interest$child_age_months,ylab="Age (months)", main="Boxplot of Age
 
 #HW2 child's weight in kilograms (1 decimal)
 
-bdhs_interest$child_weight <- bdhs_interest$child_weight / 10 #add decimal point
-summary(bdhs_interest$child_weight)
-boxplot(bdhs_interest$child_weight,ylab="Weight (kg)", main="Boxplot of Weight of Child",col = 'lavender')
+bdhs_interest$child_weight_kg <- bdhs_interest$child_weight / 10 #add decimal point
+summary(bdhs_interest$child_weight_kg)
+boxplot(bdhs_interest$child_weight_kg,ylab="Weight (kg)", main="Boxplot of Weight of Child",col = 'lavender')
 
   # remove outliers
 
-boxplot.stats(bdhs_interest$child_weight)$out 
-bdhs_interest$child_weight_clean <- bdhs_interest$child_weight
-bdhs_interest$child_weight_clean[bdhs_interest$child_weight_clean %in% boxplot.stats(bdhs_interest$child_weight)$out] <- NA
+boxplot.stats(bdhs_interest$child_weight_kg)$out
+bdhs_interest$child_weight_clean <- bdhs_interest$child_weight_kg
+bdhs_interest$child_weight_clean[bdhs_interest$child_weight_clean %in% boxplot.stats(bdhs_interest$child_weight_kg)$out] <- NA
 boxplot(bdhs_interest$child_weight_clean,ylab="Weight (kg)", main="Boxplot of Weight of Child",col = 'lavender')
 
 #HW3 child's height in centimeters (1 decimal)
 
-bdhs_interest$child_height <- bdhs_interest$child_height / 10 #add decimal point
-summary(bdhs_interest$child_height)
-boxplot(bdhs_interest$child_height,ylab="Height (cm)", main="Boxplot of Height of Child",col = 'lavender')
+bdhs_interest$child_height_cm <- bdhs_interest$child_height / 10 #add decimal point
+summary(bdhs_interest$child_height_cm)
+boxplot(bdhs_interest$child_height_cm,ylab="Height (cm)", main="Boxplot of Height of Child",col = 'lavender')
 
   #remove outliers
 
-boxplot.stats(bdhs_interest$child_height)$out 
-bdhs_interest$child_height_clean <- bdhs_interest$child_height
-bdhs_interest$child_height_clean[bdhs_interest$child_height_clean %in% boxplot.stats(bdhs_interest$child_height)$out] <- NA
+boxplot.stats(bdhs_interest$child_height_cm)$out 
+bdhs_interest$child_height_clean <- bdhs_interest$child_height_cm
+bdhs_interest$child_height_clean[bdhs_interest$child_height_clean %in% boxplot.stats(bdhs_interest$child_height_cm)$out] <- NA
 boxplot(bdhs_interest$child_height_clean,ylab="Height (cm)", main="Boxplot of Height of Child",col = 'lavender')
