@@ -2,7 +2,7 @@ bdhs <- read.csv('data/bdhs.csv')
 
 #pull variables of interest
 
-bdhs_interest <- bdhs[, c("V102", "V150", "V151", "V152")] 
+bdhs_interest <- bdhs[, c("V102", "V150", "V151", "V152", "HW2", "HW3", "HW13", "H11", "H22")] 
 
 #rename variables
 
@@ -10,6 +10,13 @@ names(bdhs_interest)[names(bdhs_interest) == "V102"] <- "residence"
 names(bdhs_interest)[names(bdhs_interest) == "V150"] <- "relationship"
 names(bdhs_interest)[names(bdhs_interest) == "V151"] <- "sex_head"
 names(bdhs_interest)[names(bdhs_interest) == "V152"] <- "age_head"
+names(bdhs_interest)[names(bdhs_interest) == "HW2"] <- "weight"
+names(bdhs_interest)[names(bdhs_interest) == "HW3"] <- "height"
+
+bdhs_interest$bmi = (bdhs_interest$weight/10) / (bdhs_interest$height/1000)^2
+
+plot(bdhs_interest$relationship, bdhs_interest$)
+summary(bdhs_interest$bmi[bdhs_interest$residence %in% 2])
 
 #check for NA values
 
