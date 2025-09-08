@@ -2,12 +2,13 @@ bdhs <- read.csv('data/bdhs.csv')
 
 #pull variables of interest
 
-bdhs_interest <- bdhs[, c("V102", "V150", "V151", "V152", "V501", "B4", "B19", "HW2", "HW3")] 
+bdhs_interest <- bdhs[, c("V102", "V136", "V150", "V151", "V152", "V501", "B4", "B19", "HW2", "HW3")] 
 
 #rename variables
 
 names(bdhs_interest)[names(bdhs_interest) == "V102"] <- "residence"
 names(bdhs_interest)[names(bdhs_interest) == "V150"] <- "relationship"
+names(bdhs_interest)[names(bdhs_interest) == "V136"] <- "household_members"
 names(bdhs_interest)[names(bdhs_interest) == "V151"] <- "head_sex"
 names(bdhs_interest)[names(bdhs_interest) == "V152"] <- "head_age"
 names(bdhs_interest)[names(bdhs_interest) == "V501"] <- "marital_status"
@@ -20,6 +21,9 @@ names(bdhs_interest)[names(bdhs_interest) == "HW3"] <- "child_height"
 
 bdhs_interest$residence <- factor(bdhs_interest$residence, levels = c(1,2), labels = c("Urban", "Rural"))
 summary(bdhs_interest$residence)
+
+#V136 number of household members
+summary(bdhs_interest$household_members)
 
 #V150 relationship to household head
 
