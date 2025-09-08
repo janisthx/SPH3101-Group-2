@@ -25,6 +25,7 @@ summary(bdhs_interest$residence)
 #V136 number of household members
 summary(bdhs_interest$household_members)
 boxplot(bdhs_interest$household_members,ylab="Number of Household Members", main="Boxplot of Number of Household Members",col = 'lavender')
+hist(bdhs_interest$household_members,breaks = 25,xlab="Number of Household Members", main="Histogram of Number of Household Members",col = 'lavender')
 
 #V150 relationship to household head
 
