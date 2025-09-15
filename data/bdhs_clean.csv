@@ -1,5 +1,6 @@
 "residence","household_members","relationship","head_sex","head_age","marital_status","child_sex","child_age_months","child_weight_clean","child_height_clean","WAZ_clean","HAZ_clean","WHZ_clean","BAZ_clean"
 "Urban",5,"Wife","Male",48,"Married","Female",8,NA,NA,NA,NA,NA,NA
+"Urban",3,"Wife","Male",27,"Married","Female",3,NA,NA,NA,NA,NA,NA
 "Urban",4,"Daughter-in-law","Female",44,"Married","Male",46,16.7,107.4,0.27,1.26,-0.63,-0.73
 "Urban",6,"Daughter","Male",70,"Married","Female",26,NA,NA,NA,NA,NA,NA
 "Urban",4,"Daughter","Male",56,"Married","Male",46,13.7,100.9,-1.26,-0.31,-1.62,-1.66
