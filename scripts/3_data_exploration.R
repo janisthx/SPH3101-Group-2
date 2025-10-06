@@ -1,7 +1,8 @@
 data <- read.csv('data/bdhs.csv')
 # Histogram
 data$HW71[data$HW71 %in% c(9996, 9997, 9998)] <- NA
-hist(data$HW71, main = "Distribution of Weight-for-Age Z-score", xlab = "HW71 Z-score", col = "skyblue", border = "black")
+WAZ_clean <- data$HW71 / 100
+hist(WAZ_clean, main = "Distribution of Weight-for-Age Z-score", xlab = "HW71 Z-score", col = "skyblue", border = "black")
 
 # Define a new variable to indicate underweight status
 data$underweight <- ifelse(data$HW71 < -200, 1, 0)
@@ -28,6 +29,14 @@ t.test(HW71 ~ V102, data = data)
 
 # Ensure mother's education level (V106) is a factor type
 data$V106 <- factor(data$V106, levels = c(0, 1, 2, 3), labels = c("No education", "Primary", "Secondary", "Higher"))
+
+boxplot(WAZ_clean ~ V106,
+        data = data,
+        col = c("lightcoral", "gold", "lightblue", "palegreen"),
+        main = "Weight-for-Age Z-score (HW71) by Mother's Education Level",
+        xlab = "Mother's Education Level",
+        ylab = "HW71 Z-score")
+
 
 # Run ANOVA to compare the mean HW71 across different mother's education levels
 anova_mother_edu <- aov(HW71 ~ V106, data = data)
