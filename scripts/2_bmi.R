@@ -1,4 +1,4 @@
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 3))
 
 #calculate bmi
 bdhs_interest$child_bmi <- bdhs_interest$child_weight_clean / 
@@ -19,7 +19,7 @@ hist(bdhs_interest$child_bmi[bdhs_interest$residence == "Urban"],
      xlab = "BMI", col = "skyblue", border = "white")
 
 hist(bdhs_interest$child_bmi[bdhs_interest$residence == "Rural"],
-     main = "BMI of Children in Urban Area",
+     main = "BMI of Children in Rural Area",
      xlab = "BMI", col = "salmon", border = "white")
 
 #family type
