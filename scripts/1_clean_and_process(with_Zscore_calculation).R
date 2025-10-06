@@ -160,6 +160,14 @@ bdhs_clean <- subset(bdhs_interest,
                                 child_weight_clean, child_height_clean, 
                                 WAZ_clean, HAZ_clean, WHZ_clean, BAZ_clean))
 
+# Filter to keep only rows with complete z-score data
+
+# Add more data we want here before cleaning
+bdhs_clean$wealth <- bdhs$V190A
+bdhs_clean$children_numbers <- bdhs$V208 #births last five years
+bdhs_clean <- bdhs_clean[complete.cases(bdhs_clean[, c("WAZ_clean", "HAZ_clean", "WHZ_clean", "BAZ_clean")]), ]
+rows_after <- nrow(bdhs_clean)
+
 write.csv(bdhs_clean, "data/bdhs_clean.csv", row.names = FALSE)
 
 cat("Data processing complete. File saved as 'bdhs_clean.csv'\n")
