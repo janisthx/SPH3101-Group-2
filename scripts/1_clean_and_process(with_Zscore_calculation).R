@@ -127,6 +127,7 @@ if(sum(valid_records) > 0) {
                        ifelse(valid_data$HW15 == 2, "h", NA)),  # l=lying, h=standing
       oedema = "n"
     )
+}
   
   # Add z-scores (scaled like HW71 - multiplied by 100)
   bdhs_interest$HAZ[valid_records] <- round(z_scores$zlen * 100)  # Height-for-age
