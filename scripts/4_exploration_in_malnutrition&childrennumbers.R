@@ -12,7 +12,7 @@ bdhs_clean$family_type = ifelse(bdhs_clean$household_members < 5, 1, 2) # can sa
 fit.1 = glm(bdhs_clean$stunting ~ bdhs_clean$household_members, family = "binomial")
 summary(fit.1) # not that related to household members
 
-bdhs_clean$children_numbers <- bdhs$V208 #births last five years
+## bdhs_clean$children_numbers <- bdhs$V208 #births last five years
 tab = table(bdhs_clean$stunting, bdhs_clean$children_numbers) # just figured out that total children numbers is related to stunting status
 hist(bdhs$V201)
 plot(bdhs_clean$stunting ~ bdhs_clean$children_numbers)
@@ -48,22 +48,4 @@ ggplot(tab_df, aes(x = factor(children_numbers),
 chisq.test(bdhs_clean$stunting, bdhs_clean$children_numbers)
 chisq.test(bdhs_clean$wasting, bdhs_clean$children_numbers)
 
-
-bdhs_clean$wealth <- bdhs$V190A # wealth status
-table(bdhs_clean$wealth, bdhs_clean$children_numbers) # poorer families tend to have more children
-
-table(bdhs_clean$wealth, bdhs_clean$household_members)
-
-# wealth vs children_numbers (related)
-chisq.test(table(bdhs_clean$wealth, bdhs_clean$children_numbers))
-
-# wealth vs household_members (related)
-chisq.test(table(bdhs_clean$wealth, bdhs_clean$household_members))
-
-
-# wealth 转为数值型
-bdhs_clean$wealth_num <- as.numeric(bdhs_clean$wealth)
-
-cor.test(bdhs_clean$wealth_num, bdhs_clean$children_numbers, method = "spearman")
-cor.test(bdhs_clean$wealth_num, bdhs_clean$household_members, method = "spearman")
 
