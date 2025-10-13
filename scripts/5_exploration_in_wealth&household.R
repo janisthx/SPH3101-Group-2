@@ -14,9 +14,11 @@ correlation_2 <- cor(bdhs_clean$wealth, bdhs_clean$household_members, method = "
 cat("Pearson Correlation Coefficient:", correlation_2, "\n")
 
 # regress malnutrition on wealth and children number (linear/on z-scores)
+# significant on wealth, not children_number(0.08)
 model_lm1 <- lm(WHZ_clean ~ children_numbers + wealth, data = bdhs_clean)
 summary(model_lm1)
 
+# significant on wealth, not household_number(0.23)
 model_lm2 <- lm(WHZ_clean ~ household_members + wealth, data = bdhs_clean)
 summary(model_lm2)
 
@@ -30,3 +32,4 @@ model_logit2 <- glm(wasting ~ household_members + wealth,
                     data = bdhs_clean,
                     family = binomial(link = "logit"))
 summary(model_logit2)
+# same conclusion as above

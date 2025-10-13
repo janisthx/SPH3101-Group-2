@@ -165,6 +165,16 @@ bdhs_clean <- subset(bdhs_interest,
 # Add more data we want here before cleaning
 bdhs_clean$wealth <- bdhs$V190A
 bdhs_clean$children_numbers <- bdhs$V208 #births last five years
+
+bdhs_clean$mother_edu <- bdhs$V133
+bdhs_clean$mother_edu[bdhs_clean$mother_edu %in% c(97, 98)] <- NA
+
+bdhs_clean$father_edu <- bdhs$V715
+bdhs_clean$father_edu[bdhs_clean$father_edu %in% c(97, 98)] <- NA
+
+bdhs_clean$residence <- factor(bdhs$V102, levels = c(1,2), labels = c("Urban", "Rural"))
+
+bdhs_clean$average_parent_eduyears <- (bdhs_clean$mother_edu + bdhs_clean$father_edu) / 2
 bdhs_clean <- bdhs_clean[complete.cases(bdhs_clean[, c("WAZ_clean", "HAZ_clean", "WHZ_clean", "BAZ_clean")]), ]
 rows_after <- nrow(bdhs_clean)
 
