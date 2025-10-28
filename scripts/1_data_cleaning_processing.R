@@ -20,8 +20,8 @@ bdhs_interest <- bdhs %>%
     # Demographic variables
     V102,  # Type of residence (urban/rural)
     V136,  # Number of household members
-    V150,  # Relationship to household head
     V151,  # Sex of household head
+    V150,  # Relationship to household head
     V152,  # Age of household head
     
     # Socioeconomic variables
@@ -39,7 +39,6 @@ bdhs_interest <- bdhs %>%
     HW2,   # Child's weight in kg (1 decimal)
     HW3,   # Child's height in cm (1 decimal)
     HW15,  # Height measurement: lying or standing
-    HW71,  # Weight/Age standard deviation (WHO)
     
     # Children Numbers
     V201,  # Total children ever born
@@ -77,7 +76,6 @@ bdhs_clean <- bdhs_interest %>%
     child_weight_raw = HW2,
     child_height_raw = HW3,
     measurement_position = HW15,
-    waz_who = HW71,
     
     # Children numbers
     total_children_born = V201,
@@ -149,6 +147,23 @@ bdhs_clean <- bdhs_interest %>%
     child_weight_kg = ifelse(child_weight_raw >= 9994, NA, child_weight_raw / 10),
     child_height_cm = ifelse(child_height_raw >= 9994, NA, child_height_raw / 10),
     
+    # Clean the Head Age Variable
+    head_age = ifelse(head_age == 98, NA, head_age),
+
+    # Label the relationship variable
+    relationship = ifelse(relationship > 12, NA, relationship),
+    relationship = factor(relationship, levels = c(1,2,3,4,5,6,7,8,9,10,11,12), 
+                                     labels = c("Head","Wife","Daughter","Daughter-in-law","Granddaughter", 
+                                                "Mother","Mother-in-law","Sister","Co-spouse","Other relative", 
+                                                "Adopted/foster child","Not related")),
+    relationship = case_when(
+      relationship %in% c("Wife", "Daughter", "Granddaughter", "Daughter-in-law", "Mother", "Mother-in-law", "Co-spouse") ~ "Traditional",
+      relationship %in% c("Head", "Sister", "Other relative", "Adopted/foster child", "Not related") ~ "Non_traditional",
+      TRUE ~ NA_character_
+    ),
+    relationship = factor(relationship, 
+                               levels = c("Traditional", "Non_traditional")),
+    
     # Create age categories for children
     child_age_cat = case_when(
       child_age_months < 6 ~ "0-5 months",
@@ -159,6 +174,8 @@ bdhs_clean <- bdhs_interest %>%
       child_age_months <= 60 ~ "48-60 months",
       TRUE ~ NA_character_
     )
+
+    
   )
 
 # Calculate Z-scores using anthro package
@@ -262,7 +279,7 @@ final_vars <- c(
   "severely_stunted", "severely_wasted", "severely_underweight", "severe_malnutrition",
   
   # Other demographics
-  "head_sex", "head_age"
+  "head_sex", "head_age", "relationship"
 )
 
 bdhs_final <- bdhs_clean %>%
@@ -276,15 +293,6 @@ cat(paste("Original dataset:", nrow(bdhs), "rows\n"))
 cat(paste("After cleaning:", nrow(bdhs_final), "rows\n"))
 cat(paste("Records with complete malnutrition data:", 
           sum(complete.cases(bdhs_final[c("stunted", "wasted", "underweight")])), "\n\n"))
-
-# Create survey design object for weighted analysis
-survey_design <- svydesign(
-  ids = ~psu,
-  strata = ~strata,
-  weights = ~weight_normalized,
-  data = bdhs_final,
-  nest = TRUE
-)
 
 # Calculate weighted prevalence
 cat("WEIGHTED malnutrition prevalence:\n")
@@ -306,6 +314,3 @@ cat(paste("Any malnutrition:", round(mean(bdhs_final$any_malnutrition, na.rm = T
 write.csv(bdhs_final, "data/bdhs_cleaned_final.csv", row.names = FALSE)
 cat("Cleaned data saved as 'bdhs_cleaned_final.csv'\n")
 
-# Save survey design object for later use
-saveRDS(survey_design, "data/survey_design.rds")
-cat("Survey design object saved as 'survey_design.rds'\n")
