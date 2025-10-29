@@ -294,22 +294,6 @@ cat(paste("After cleaning:", nrow(bdhs_final), "rows\n"))
 cat(paste("Records with complete malnutrition data:", 
           sum(complete.cases(bdhs_final[c("stunted", "wasted", "underweight")])), "\n\n"))
 
-# Calculate weighted prevalence
-cat("WEIGHTED malnutrition prevalence:\n")
-cat("----------------------------------\n")
-cat(paste("Stunted:", round(svymean(~stunted, survey_design, na.rm = TRUE)[1] * 100, 1), "%\n"))
-cat(paste("Wasted:", round(svymean(~wasted, survey_design, na.rm = TRUE)[1] * 100, 1), "%\n"))
-cat(paste("Underweight:", round(svymean(~underweight, survey_design, na.rm = TRUE)[1] * 100, 1), "%\n"))
-cat(paste("Any malnutrition:", round(svymean(~any_malnutrition, survey_design, na.rm = TRUE)[1] * 100, 1), "%\n\n"))
-
-# Unweighted prevalence for comparison
-cat("UNWEIGHTED malnutrition prevalence:\n")
-cat("------------------------------------\n")
-cat(paste("Stunted:", round(mean(bdhs_final$stunted, na.rm = TRUE) * 100, 1), "%\n"))
-cat(paste("Wasted:", round(mean(bdhs_final$wasted, na.rm = TRUE) * 100, 1), "%\n"))
-cat(paste("Underweight:", round(mean(bdhs_final$underweight, na.rm = TRUE) * 100, 1), "%\n"))
-cat(paste("Any malnutrition:", round(mean(bdhs_final$any_malnutrition, na.rm = TRUE) * 100, 1), "%\n\n"))
-
 # Save cleaned dataset
 write.csv(bdhs_final, "data/bdhs_cleaned_final.csv", row.names = FALSE)
 cat("Cleaned data saved as 'bdhs_cleaned_final.csv'\n")
