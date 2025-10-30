@@ -1,6 +1,8 @@
 # 2. Comprehensive Exploratory Analysis with Statistical Tests
 
 library(tidyverse)
+library(survey)
+library(ggplot2)
 
 # Load cleaned data
 bdhs_final <- read.csv("data/bdhs_cleaned_final.csv")
@@ -46,6 +48,18 @@ cat("\nStunting by wealth quintiles:\n")
 stunting_wealth_tab <- table(bdhs_final$stunted, bdhs_final$wealth_quintile)
 stunting_wealth_tab
 print(prop.table(stunting_wealth_tab, 2) * 100)
+ggplot(bdhs_final, aes(wealth_quintile, fill = factor(stunted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Stunting", "1" = "Stunting"),
+    values = c("0" = "chartreuse4",  
+               "1" = "brown"), 
+    ) +
+  scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Wealth quintile", y = "Percent within quintile")
 chisq.test(stunting_wealth_tab)
 
 # Wasting
@@ -53,6 +67,18 @@ cat("\nWasting by wealth quintiles:\n")
 wasting_wealth_tab <- table(bdhs_final$wasted, bdhs_final$wealth_quintile)
 wasting_wealth_tab
 print(prop.table(wasting_wealth_tab, 2) * 100)
+ggplot(bdhs_final, aes(wealth_quintile, fill = factor(wasted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Wasting", "1" = "Wasting"),
+    values = c("0" = "chartreuse4",  
+               "1" = "brown"), 
+  ) +
+  scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Wealth quintile", y = "Percent within quintile")
 chisq.test(wasting_wealth_tab)
 
 # Underweight
