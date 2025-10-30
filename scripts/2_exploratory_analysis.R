@@ -2,7 +2,6 @@
 
 library(tidyverse)
 library(survey)
-library(ggplot2)
 
 # Load cleaned data
 bdhs_final <- read.csv("data/bdhs_cleaned_final.csv")
@@ -118,9 +117,39 @@ stunted_head_age <- bdhs_final$head_age[bdhs_final$stunted == 1]
 normal_head_age <- bdhs_final$head_age[bdhs_final$any_malnutrition == 0]
 t.test(stunted_head_age, normal_head_age)
 
+df_stunting <- data.frame(
+  group = c(rep("Stunting", length(stunted_head_age)),
+            rep("No Stunting",  length(normal_head_age))),
+  head_age = c(stunted_head_age, normal_head_age)
+)
+
+ggplot(df_stunting, aes(group, head_age, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Stunting" = "chartreuse4", "Stunting" = "brown")) +
+  labs(x = NULL, y = "Head age (months)", fill = NULL) +
+  theme_minimal() + theme(legend.position = "none")
+
 # Wasting  
 wasted_head_age <- bdhs_final$head_age[bdhs_final$wasted == 1]
 t.test(wasted_head_age, normal_head_age)
+
+df_wasting <- data.frame(
+  group = c(rep("Wasting", length(wasted_head_age)),
+            rep("No Wasting",  length(normal_head_age))),
+  head_age = c(wasted_head_age, normal_head_age)
+)
+
+ggplot(df_wasting, aes(group, head_age, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Wasting" = "chartreuse4", "Wasting" = "brown")) +
+  labs(x = NULL, y = "Head age (months)", fill = NULL) +
+  theme_minimal() + theme(legend.position = "none")
 
 # Underweight  
 uw_head_age <- bdhs_final$head_age[bdhs_final$underweight == 1]
