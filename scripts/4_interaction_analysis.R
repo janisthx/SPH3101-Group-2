@@ -1,9 +1,5 @@
 # 4. Urban-Rural Interaction Analysis
 
-library(tidyverse)
-
-# Load data and models
-bdhs_final <- read.csv("data/bdhs_cleaned_final.csv")
 
 # Take stunting as example:
 

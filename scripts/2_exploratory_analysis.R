@@ -1,11 +1,5 @@
 # 2. Comprehensive Exploratory Analysis with Statistical Tests
 
-library(tidyverse)
-library(survey)
-
-# Load cleaned data
-bdhs_final <- read.csv("data/bdhs_cleaned_final.csv")
-
 # PART 1: BASIC DESCRIPTIVE STATISTICS
 
 # Sample size

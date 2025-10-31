@@ -1,10 +1,6 @@
 
 # 1. Data Cleaning and Processing with Survey Weights
 
-# Load required packages
-library(tidyverse)
-library(anthro)
-
 # Read data
 bdhs <- read.csv('data/bdhs.csv')
 

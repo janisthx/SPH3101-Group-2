@@ -1,11 +1,5 @@
 # 3. Statistical Modeling with Survey Weights
 
-library(tidyverse)
-library(car) # For VIF Analysis
-
-# Load data
-bdhs_final <- read.csv("data/bdhs_cleaned_final.csv")
-
 cat("\n========== STATISTICAL MODELING WITH SURVEY WEIGHTS ==========\n")
 
 # PREPARE MODELING DATA
