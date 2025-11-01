@@ -13,29 +13,55 @@ cat("Underweight:", mean(bdhs_final$underweight, na.rm=T)*100, "%\n")
 
 # Seeing the malnutrition's correlation
 
-# Mosaic Plots for malnutrition distribution
-par(mfrow = c(1, 3))
+# NA is included here, try to eliminate it later
 
 # 1. Stunted vs Wasted
 chi1 <- chisq.test(bdhs_final$stunted, bdhs_final$wasted)
-mosaic(~ stunted + wasted, data = bdhs_final,
-       main = paste0("Stunted vs Wasted\nχ² = ", round(chi1$statistic, 2), 
-                     ", p = 0.002"),
-       shade = TRUE, legend = TRUE)
+ggplot(bdhs_final, aes(factor(stunted), fill = factor(wasted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "Wasted",
+    breaks = c("0","1"),
+    labels = c("0" = "No", "1" = "Yes"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_x_discrete(labels = c("0" = "No Stunting", "1" = "Stunting")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Stunted vs Wasted (χ² = ", round(chi1$statistic, 2), 
+                      ", p = ", round(chi1$p.value, 4), ")"),
+       x = "Stunted", y = "Percent")
 
 # 2. Stunted vs Underweight
 chi2 <- chisq.test(bdhs_final$stunted, bdhs_final$underweight)
-mosaic(~ stunted + underweight, data = bdhs_final,
-       main = paste0("Stunted vs Underweight\nχ² = ", round(chi2$statistic, 2), 
-                     ", p < 2.2e-16"),
-       shade = TRUE, legend = TRUE)
+ggplot(bdhs_final, aes(factor(stunted), fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "Underweight",
+    breaks = c("0","1"),
+    labels = c("0" = "No", "1" = "Yes"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_x_discrete(labels = c("0" = "No Stunting", "1" = "Stunting")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Stunted vs Underweight (χ² = ", round(chi2$statistic, 2), 
+                      ", p < 2.2e-16)"),
+       x = "Stunted", y = "Percent")
 
 # 3. Wasted vs Underweight
 chi3 <- chisq.test(bdhs_final$wasted, bdhs_final$underweight)
-mosaic(~ wasted + underweight, data = bdhs_final,
-       main = paste0("Wasted vs Underweight\nχ² = ", round(chi3$statistic, 2), 
-                     ", p = 0.002"),
-       shade = TRUE, legend = TRUE)
+ggplot(bdhs_final, aes(factor(wasted), fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "Underweight",
+    breaks = c("0","1"),
+    labels = c("0" = "No", "1" = "Yes"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_x_discrete(labels = c("0" = "No Wasting", "1" = "Wasting")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Wasted vs Underweight (χ² = ", round(chi3$statistic, 2), 
+                      ", p = ", round(chi3$p.value, 4), ")"),
+       x = "Wasted", y = "Percent")
 
 # PART 2: OBJECTIVE 1 - WEALTH AND MALNUTRITION
 
@@ -58,7 +84,7 @@ cat("\n--- Chi-square Tests: Wealth Categories vs Malnutrition ---\n")
 # Stunting
 cat("\nStunting by wealth quintiles:\n")
 stunting_wealth_tab <- table(bdhs_final$stunted, bdhs_final$wealth_quintile)
-stunting_wealth_tab
+chi4 <- chisq.test(stunting_wealth_tab)
 print(prop.table(stunting_wealth_tab, 2) * 100)
 ggplot(bdhs_final, aes(wealth_quintile, fill = factor(stunted))) +
   geom_bar(position = "fill") +
@@ -72,7 +98,7 @@ ggplot(bdhs_final, aes(wealth_quintile, fill = factor(stunted))) +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
   labs(x = "Wealth quintile", y = "Percent within quintile")
-chisq.test(stunting_wealth_tab)
+
 
 # Wasting
 cat("\nWasting by wealth quintiles:\n")
@@ -98,6 +124,18 @@ cat("\nUnderweight by wealth quintiles:\n")
 uw_wealth_tab <- table(bdhs_final$underweight, bdhs_final$wealth_quintile)
 uw_wealth_tab
 print(prop.table(uw_wealth_tab, 2) * 100)
+ggplot(bdhs_final, aes(wealth_quintile, fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Underweight", "1" = "Underweight"),
+    values = c("0" = "chartreuse4",  
+               "1" = "brown"), 
+  ) +
+  scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Wealth quintile", y = "Percent within quintile")
 chisq.test(uw_wealth_tab)
 
 # PART 3: OBJECTIVE 2 - HOUSEHOLD CONDITIONS AND MALNUTRITION
@@ -106,14 +144,14 @@ cat("\n==================== OBJECTIVE 2A: HOUSEHOLD STRUCTURES (HEAD) ==========
 # T-test: Compare head age between malnourished vs normal
 cat("\n--- T-tests: Head Age by Malnutrition Status ---\n")
 
-# Stunting
+# Stunting vs Normal - Head Age
 stunted_head_age <- bdhs_final$head_age[bdhs_final$stunted == 1]
 normal_head_age <- bdhs_final$head_age[bdhs_final$any_malnutrition == 0]
-t.test(stunted_head_age, normal_head_age)
+t_stunting_age <- t.test(stunted_head_age, normal_head_age)
 
 df_stunting_head_age <- data.frame(
   group = c(rep("Stunting", length(stunted_head_age)),
-            rep("No Malnutrition",  length(normal_head_age))),
+            rep("No Malnutrition", length(normal_head_age))),
   head_age = c(stunted_head_age, normal_head_age)
 )
 
@@ -123,16 +161,19 @@ ggplot(df_stunting_head_age, aes(group, head_age, fill = group)) +
   stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
   scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Stunting" = "brown")) +
-  labs(x = NULL, y = "Head age (months)", fill = NULL) +
-  theme_minimal() + theme(legend.position = "none")
+  labs(title = paste0("Head Age: Stunting vs Normal\n(t = ", round(t_stunting_age$statistic, 2), 
+                      ", p = ", round(t_stunting_age$p.value, 4), ")"),
+       x = NULL, y = "Head Age (years)", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
-# Wasting  
+# Wasting vs Normal - Head Age
 wasted_head_age <- bdhs_final$head_age[bdhs_final$wasted == 1]
-t.test(wasted_head_age, normal_head_age)
+t_wasting_age <- t.test(wasted_head_age, normal_head_age)
 
 df_wasting_head_age <- data.frame(
   group = c(rep("Wasting", length(wasted_head_age)),
-            rep("No Malnutrition",  length(normal_head_age))),
+            rep("No Malnutrition", length(normal_head_age))),
   head_age = c(wasted_head_age, normal_head_age)
 )
 
@@ -142,32 +183,150 @@ ggplot(df_wasting_head_age, aes(group, head_age, fill = group)) +
   stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
   scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Wasting" = "brown")) +
-  labs(x = NULL, y = "Head age (months)", fill = NULL) +
-  theme_minimal() + theme(legend.position = "none")
+  labs(title = paste0("Head Age: Wasting vs Normal\n(t = ", round(t_wasting_age$statistic, 2), 
+                      ", p = ", round(t_wasting_age$p.value, 4), ")"),
+       x = NULL, y = "Head Age (years)", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
-# Underweight  
+# Underweight vs Normal - Head Age
 uw_head_age <- bdhs_final$head_age[bdhs_final$underweight == 1]
-t.test(uw_head_age, normal_head_age)
+t_uw_age <- t.test(uw_head_age, normal_head_age)
+
+df_uw_head_age <- data.frame(
+  group = c(rep("Underweight", length(uw_head_age)),
+            rep("No Malnutrition", length(normal_head_age))),
+  head_age = c(uw_head_age, normal_head_age)
+)
+
+ggplot(df_uw_head_age, aes(group, head_age, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Underweight" = "brown")) +
+  labs(title = paste0("Head Age: Underweight vs Normal\n(t = ", round(t_uw_age$statistic, 2), 
+                      ", p = ", round(t_uw_age$p.value, 4), ")"),
+       x = NULL, y = "Head Age (years)", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
 # Head Sex Analysis
 cat("\n--- Chi-square Test: Head Sex ---\n")
-cat("Stunting & Head Sex")
-chisq.test(table(bdhs_final$stunted, bdhs_final$head_sex))
 
-cat("Wasting & Head Sex")
-chisq.test(table(bdhs_final$wasted, bdhs_final$head_sex))
+# Stunting & Head Sex
+data_stunting_sex <- bdhs_final[!is.na(bdhs_final$stunted) & !is.na(bdhs_final$head_sex), ]
+chi_stunting_sex <- chisq.test(table(data_stunting_sex$stunted, data_stunting_sex$head_sex))
+cat("Stunting & Head Sex: χ² =", chi_stunting_sex$statistic, ", p =", chi_stunting_sex$p.value, "\n")
 
-chisq.test(table(bdhs_final$underweight, bdhs_final$head_sex))
+ggplot(data_stunting_sex, aes(head_sex, fill = factor(stunted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Stunting", "1" = "Stunting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Stunting by Head Sex (χ² = ", round(chi_stunting_sex$statistic, 2), 
+                      ", p = ", round(chi_stunting_sex$p.value, 4), ")"),
+       x = "Head Sex", y = "Percent")
 
-# Relationship to head Analysis
+# Wasting & Head Sex
+data_wasting_sex <- bdhs_final[!is.na(bdhs_final$wasted) & !is.na(bdhs_final$head_sex), ]
+chi_wasting_sex <- chisq.test(table(data_wasting_sex$wasted, data_wasting_sex$head_sex))
+cat("Wasting & Head Sex: χ² =", chi_wasting_sex$statistic, ", p =", chi_wasting_sex$p.value, "\n")
+
+ggplot(data_wasting_sex, aes(head_sex, fill = factor(wasted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Wasting", "1" = "Wasting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Wasting by Head Sex (χ² = ", round(chi_wasting_sex$statistic, 2), 
+                      ", p = ", round(chi_wasting_sex$p.value, 4), ")"),
+       x = "Head Sex", y = "Percent")
+
+# Underweight & Head Sex
+data_uw_sex <- bdhs_final[!is.na(bdhs_final$underweight) & !is.na(bdhs_final$head_sex), ]
+chi_uw_sex <- chisq.test(table(data_uw_sex$underweight, data_uw_sex$head_sex))
+cat("Underweight & Head Sex: χ² =", chi_uw_sex$statistic, ", p =", chi_uw_sex$p.value, "\n")
+
+ggplot(data_uw_sex, aes(head_sex, fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Underweight", "1" = "Underweight"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Underweight by Head Sex (χ² = ", round(chi_uw_sex$statistic, 2), 
+                      ", p = ", round(chi_uw_sex$p.value, 4), ")"),
+       x = "Head Sex", y = "Percent")
+
+# Relationship to Head Analysis
 cat("\n--- Chi-square Test: Relationship ---\n")
-cat("Stunting & Relationship")
-chisq.test(table(bdhs_final$stunted, bdhs_final$relationship))
 
-cat("Wasting & Relationship")
-chisq.test(table(bdhs_final$wasted, bdhs_final$relationship))
+# Stunting & Relationship
+data_stunting_rel <- bdhs_final[!is.na(bdhs_final$stunted) & !is.na(bdhs_final$relationship), ]
+chi_stunting_rel <- chisq.test(table(data_stunting_rel$stunted, data_stunting_rel$relationship))
+cat("Stunting & Relationship: χ² =", chi_stunting_rel$statistic, ", p =", chi_stunting_rel$p.value, "\n")
 
-chisq.test(table(bdhs_final$underweight, bdhs_final$relationship))
+ggplot(data_stunting_rel, aes(relationship, fill = factor(stunted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Stunting", "1" = "Stunting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Stunting by Relationship to Head (χ² = ", round(chi_stunting_rel$statistic, 2), 
+                      ", p = ", round(chi_stunting_rel$p.value, 4), ")"),
+       x = "Relationship to Head", y = "Percent") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Wasting & Relationship
+data_wasting_rel <- bdhs_final[!is.na(bdhs_final$wasted) & !is.na(bdhs_final$relationship), ]
+chi_wasting_rel <- chisq.test(table(data_wasting_rel$wasted, data_wasting_rel$relationship))
+cat("Wasting & Relationship: χ² =", chi_wasting_rel$statistic, ", p =", chi_wasting_rel$p.value, "\n")
+
+ggplot(data_wasting_rel, aes(relationship, fill = factor(wasted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Wasting", "1" = "Wasting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Wasting by Relationship to Head (χ² = ", round(chi_wasting_rel$statistic, 2), 
+                      ", p = ", round(chi_wasting_rel$p.value, 4), ")"),
+       x = "Relationship to Head", y = "Percent") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Underweight & Relationship
+data_uw_rel <- bdhs_final[!is.na(bdhs_final$underweight) & !is.na(bdhs_final$relationship), ]
+chi_uw_rel <- chisq.test(table(data_uw_rel$underweight, data_uw_rel$relationship))
+cat("Underweight & Relationship: χ² =", chi_uw_rel$statistic, ", p =", chi_uw_rel$p.value, "\n")
+
+ggplot(data_uw_rel, aes(relationship, fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Underweight", "1" = "Underweight"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Underweight by Relationship to Head (χ² = ", round(chi_uw_rel$statistic, 2), 
+                      ", p = ", round(chi_uw_rel$p.value, 4), ")"),
+       x = "Relationship to Head", y = "Percent") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 cat("\n==================== OBJECTIVE 2B: HOUSEHOLD SIZE ====================\n")
 
@@ -183,24 +342,69 @@ cat("\n--- T-tests: Household Size by Malnutrition Status ---\n")
 # Stunting
 stunted_hh_size <- bdhs_final$household_members[bdhs_final$stunted == 1]
 normal_hh_size <- bdhs_final$household_members[bdhs_final$any_malnutrition == 0]
-t.test(stunted_hh_size, normal_hh_size)
+t_stunting_hh <- t.test(stunted_hh_size, normal_hh_size)
+
+df_stunting_hh <- data.frame(
+  group = c(rep("Stunting", length(stunted_hh_size)),
+            rep("No Malnutrition", length(normal_hh_size))),
+  hh_size = c(stunted_hh_size, normal_hh_size)
+)
+
+ggplot(df_stunting_hh, aes(group, hh_size, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Stunting" = "brown")) +
+  labs(title = paste0("Household Size: Stunting vs Normal\n(t = ", round(t_stunting_hh$statistic, 2), 
+                      ", p = ", round(t_stunting_hh$p.value, 4), ")"),
+       x = NULL, y = "Household Members", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
 # Wasting
 wasted_hh_size <- bdhs_final$household_members[bdhs_final$wasted == 1]
-t.test(wasted_hh_size, normal_hh_size)
+t_wasting_hh <- t.test(wasted_hh_size, normal_hh_size)
+
+df_wasting_hh <- data.frame(
+  group = c(rep("Wasting", length(wasted_hh_size)),
+            rep("No Malnutrition", length(normal_hh_size))),
+  hh_size = c(wasted_hh_size, normal_hh_size)
+)
+
+ggplot(df_wasting_hh, aes(group, hh_size, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Wasting" = "brown")) +
+  labs(title = paste0("Household Size: Wasting vs Normal\n(t = ", round(t_wasting_hh$statistic, 2), 
+                      ", p = ", round(t_wasting_hh$p.value, 4), ")"),
+       x = NULL, y = "Household Members", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
 # Underweight
 uw_hh_size <- bdhs_final$household_members[bdhs_final$underweight == 1]
-t.test(uw_hh_size, normal_hh_size)
+t_uw_hh <- t.test(uw_hh_size, normal_hh_size)
 
-# Categorical household size
-cat("\n--- Chi-square Test: Household Size Categories ---\n")
-cat("Stunting & Household size")
-chisq.test(table(bdhs_final$stunted, bdhs_final$household_size_cat))
-cat("Wasting & Household size")
-chisq.test(table(bdhs_final$wasted, bdhs_final$household_size_cat))
+df_uw_hh <- data.frame(
+  group = c(rep("Underweight", length(uw_hh_size)),
+            rep("No Malnutrition", length(normal_hh_size))),
+  hh_size = c(uw_hh_size, normal_hh_size)
+)
 
-chisq.test(table(bdhs_final$underweight, bdhs_final$household_size_cat))
+ggplot(df_uw_hh, aes(group, hh_size, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Underweight" = "brown")) +
+  labs(title = paste0("Household Size: Underweight vs Normal\n(t = ", round(t_uw_hh$statistic, 2), 
+                      ", p = ", round(t_uw_hh$p.value, 4), ")"),
+       x = NULL, y = "Household Members", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
 cat("\n==================== OBJECTIVE 2C: NUMBER OF CHILDREN ====================\n")
 
@@ -228,6 +432,7 @@ cor.test(bdhs_final$living_children, bdhs_final$stunted)
 cor.test(bdhs_final$living_children, bdhs_final$wasted)
 cor.test(bdhs_final$living_children, bdhs_final$underweight)
 
+# Similar results, but one's household condition may not be related to only births last 5 years, so use total children born
 
 # T-tests for total children ever born (most relevant)
 cat("\n--- T-tests: Children by Malnutrition Status ---\n")
@@ -235,21 +440,127 @@ cat("\n--- T-tests: Children by Malnutrition Status ---\n")
 # Stunting
 stunted_children <- bdhs_final$total_children_born[bdhs_final$stunted == 1]
 normal_children <- bdhs_final$total_children_born[bdhs_final$any_malnutrition == 0]
-t.test(stunted_children, normal_children)
+t_stunting_child <- t.test(stunted_children, normal_children)
+
+df_stunting_child <- data.frame(
+  group = c(rep("Stunting", length(stunted_children)),
+            rep("No Malnutrition", length(normal_children))),
+  children = c(stunted_children, normal_children)
+)
+
+ggplot(df_stunting_child, aes(group, children, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Stunting" = "brown")) +
+  labs(title = paste0("Total Children Born: Stunting vs Normal\n(t = ", round(t_stunting_child$statistic, 2), 
+                      ", p < 0.001)"),
+       x = NULL, y = "Total Children Born", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
 
 # Wasting
 wasted_children <- bdhs_final$births_last5y[bdhs_final$wasted == 1]
-t.test(wasted_children, normal_children)
+t_wasting_child <- t.test(wasted_children, normal_children)
+
+df_wasting_child <- data.frame(
+  group = c(rep("Wasting", length(wasted_children)),
+            rep("No Malnutrition", length(normal_children))),
+  children = c(wasted_children, normal_children)
+)
+
+ggplot(df_wasting_child, aes(group, children, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Wasting" = "brown")) +
+  labs(title = paste0("Total Children Born: Wasting vs Normal\n(t = ", round(t_wasting_child$statistic, 2), 
+                      ", p = ", round(t_wasting_child$p.value, 4), ")"),
+       x = NULL, y = "Total Children Born", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
+
 
 # Underweight
 uw_children <- bdhs_final$births_last5y[bdhs_final$underweight == 1]
-t.test(uw_children, normal_children)
+t_uw_child <- t.test(uw_children, normal_children)
 
-# Chi-square for categorical
+df_uw_child <- data.frame(
+  group = c(rep("Underweight", length(uw_children)),
+            rep("No Malnutrition", length(normal_children))),
+  children = c(uw_children, normal_children)
+)
+
+ggplot(df_uw_child, aes(group, children, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Underweight" = "brown")) +
+  labs(title = paste0("Total Children Born: Underweight vs Normal\n(t = ", round(t_uw_child$statistic, 2), 
+                      ", p < 0.001)"),
+       x = NULL, y = "Total Children Born", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "none")
+
+# Chi-square for categorical (can decide what plots to use here, this or violin plots)
 cat("\n--- Chi-square Test: Children Categories ---\n")
-chisq.test(table(bdhs_final$stunted, bdhs_final$children_cat))
-chisq.test(table(bdhs_final$wasted, bdhs_final$children_cat))
-chisq.test(table(bdhs_final$underweight, bdhs_final$children_cat))
+
+# Stunting & Children Category
+data_stunting_child <- bdhs_final[!is.na(bdhs_final$stunted) & !is.na(bdhs_final$children_cat), ]
+chi_stunting_child <- chisq.test(table(data_stunting_child$stunted, data_stunting_child$children_cat))
+cat("Stunting & Children category: χ² =", chi_stunting_child$statistic, ", p =", chi_stunting_child$p.value, "\n")
+
+ggplot(data_stunting_child, aes(children_cat, fill = factor(stunted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Stunting", "1" = "Stunting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Stunting by Children Category (χ² = ", round(chi_stunting_child$statistic, 2), 
+                      ", p = ", round(chi_stunting_child$p.value, 4), ")"),
+       x = "Children Category", y = "Percent")
+
+# Wasting & Children Category
+data_wasting_child <- bdhs_final[!is.na(bdhs_final$wasted) & !is.na(bdhs_final$children_cat), ]
+chi_wasting_child <- chisq.test(table(data_wasting_child$wasted, data_wasting_child$children_cat))
+cat("Wasting & Children category: χ² =", chi_wasting_child$statistic, ", p =", chi_wasting_child$p.value, "\n")
+
+ggplot(data_wasting_child, aes(children_cat, fill = factor(wasted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Wasting", "1" = "Wasting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Wasting by Children Category (χ² = ", round(chi_wasting_child$statistic, 2), 
+                      ", p = ", round(chi_wasting_child$p.value, 4), ")"),
+       x = "Children Category", y = "Percent")
+
+# Underweight & Children Category
+data_uw_child <- bdhs_final[!is.na(bdhs_final$underweight) & !is.na(bdhs_final$children_cat), ]
+chi_uw_child <- chisq.test(table(data_uw_child$underweight, data_uw_child$children_cat))
+cat("Underweight & Children category: χ² =", chi_uw_child$statistic, ", p =", chi_uw_child$p.value, "\n")
+
+ggplot(data_uw_child, aes(children_cat, fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Underweight", "1" = "Underweight"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Underweight by Children Category (χ² = ", round(chi_uw_child$statistic, 2), 
+                      ", p = ", round(chi_uw_child$p.value, 4), ")"),
+       x = "Children Category", y = "Percent")
 
 
 # PART 4: OBJECTIVE 3 - WEALTH AND HOUSEHOLD COMPOSITION ASSOCIATION
@@ -272,12 +583,30 @@ cat("Wealth and total children born: r =", cor_wealth_total_children$estimate, "
 cat("\n--- Cross-tabulation: Wealth by HH Size Category ---\n")
 wealth_hh_table <- table(bdhs_final$wealth_quintile, bdhs_final$household_size_cat)
 print(prop.table(wealth_hh_table, 1) * 100)
-chisq.test(wealth_hh_table)
+wealth_hh_test <- chisq.test(wealth_hh_table)
+
+ggplot(bdhs_final, aes(wealth_quintile, fill = household_size_cat)) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set2", name = "Household Size") +
+  scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Household Size by Wealth Quintile (χ² = ", 
+                      round(wealth_hh_test$statistic, 2), ", p < 0.001)"),
+       x = "Wealth Quintile", y = "Percent within quintile")
 
 cat("\n--- Cross-tabulation: Wealth by Children Number Category ---\n")
 wealth_child_table <- table(bdhs_final$wealth_quintile, bdhs_final$children_cat)
 print(prop.table(wealth_child_table, 1) * 100)
-chisq.test(wealth_child_table)
+wealth_child_test <- chisq.test(wealth_child_table)
+
+ggplot(bdhs_final, aes(wealth_quintile, fill = children_cat)) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set2", name = "Children Category") +
+  scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Children Number by Wealth Quintile (χ² = ", 
+                      round(wealth_child_test$statistic, 2), ", p < 0.001)"),
+       x = "Wealth Quintile", y = "Percent within quintile")
 
 # PART 5: OBJECTIVE 4 - PARENT EDUCATION AND MALNUTRITION
 
@@ -349,16 +678,55 @@ print(prop.table(stunting_residence, 2) * 100)
 stunting_res_test <- chisq.test(stunting_residence)
 cat("Chi-square test: X² =", stunting_res_test$statistic, ", p =", stunting_res_test$p.value, "\n")
 
+ggplot(bdhs_final, aes(residence, fill = factor(stunted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Stunting", "1" = "Stunting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Stunting by Residence (χ² = ", round(stunting_res_test$statistic, 2), 
+                      ", p = ", round(stunting_res_test$p.value, 4), ")"),
+       x = "Residence", y = "Percent within residence")
+
 wasting_residence <- table(bdhs_final$wasted, bdhs_final$residence)
 cat("\nWasting prevalence:\n")
 print(prop.table(wasting_residence, 2) * 100)
 wasting_res_test <- chisq.test(wasting_residence)
 cat("Chi-square test: X² =", wasting_res_test$statistic, ", p =", wasting_res_test$p.value, "\n")
 
+ggplot(bdhs_final, aes(residence, fill = factor(wasted))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Wasting", "1" = "Wasting"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Wasting by Residence (χ² = ", round(wasting_res_test$statistic, 2), 
+                      ", p = ", round(wasting_res_test$p.value, 4), ")"),
+       x = "Residence", y = "Percent within residence")
+
 uw_residence <- table(bdhs_final$underweight, bdhs_final$residence)
 cat("\nUnderweight prevalence:\n")
 print(prop.table(uw_residence, 2) * 100)
 uw_res_test <- chisq.test(uw_residence)
 cat("Chi-square test: X² =", uw_res_test$statistic, ", p =", uw_res_test$p.value, "\n")
+
+ggplot(bdhs_final, aes(residence, fill = factor(underweight))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(
+    name = "",
+    breaks = c("0","1"),
+    labels = c("0" = "No Underweight", "1" = "Underweight"),
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = paste0("Underweight by Residence (χ² = ", round(uw_res_test$statistic, 2), 
+                      ", p = ", round(uw_res_test$p.value, 4), ")"),
+       x = "Residence", y = "Percent within residence")
 
 # It is a bit significant
