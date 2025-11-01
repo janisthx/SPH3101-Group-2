@@ -12,11 +12,30 @@ cat("Wasting:", mean(bdhs_final$wasted, na.rm=T)*100, "%\n")
 cat("Underweight:", mean(bdhs_final$underweight, na.rm=T)*100, "%\n")
 
 # Seeing the malnutrition's correlation
-table(bdhs_final$stunted, bdhs_final$wasted)
-table(bdhs_final$stunted, bdhs_final$underweight)
 
-chisq.test(bdhs_final$wasted, bdhs_final$stunted)
-chisq.test(bdhs_final$underweight, bdhs_final$stunted)
+# Mosaic Plots for malnutrition distribution
+par(mfrow = c(1, 3))
+
+# 1. Stunted vs Wasted
+chi1 <- chisq.test(bdhs_final$stunted, bdhs_final$wasted)
+mosaic(~ stunted + wasted, data = bdhs_final,
+       main = paste0("Stunted vs Wasted\nχ² = ", round(chi1$statistic, 2), 
+                     ", p = 0.002"),
+       shade = TRUE, legend = TRUE)
+
+# 2. Stunted vs Underweight
+chi2 <- chisq.test(bdhs_final$stunted, bdhs_final$underweight)
+mosaic(~ stunted + underweight, data = bdhs_final,
+       main = paste0("Stunted vs Underweight\nχ² = ", round(chi2$statistic, 2), 
+                     ", p < 2.2e-16"),
+       shade = TRUE, legend = TRUE)
+
+# 3. Wasted vs Underweight
+chi3 <- chisq.test(bdhs_final$wasted, bdhs_final$underweight)
+mosaic(~ wasted + underweight, data = bdhs_final,
+       main = paste0("Wasted vs Underweight\nχ² = ", round(chi3$statistic, 2), 
+                     ", p = 0.002"),
+       shade = TRUE, legend = TRUE)
 
 # PART 2: OBJECTIVE 1 - WEALTH AND MALNUTRITION
 
@@ -80,14 +99,6 @@ uw_wealth_tab <- table(bdhs_final$underweight, bdhs_final$wealth_quintile)
 uw_wealth_tab
 print(prop.table(uw_wealth_tab, 2) * 100)
 chisq.test(uw_wealth_tab)
-
-# Trend test using numeric wealth index
-cat("\n--- Trend Test: Wealth as Continuous Variable ---\n")
-
-# Correlation between wealth index and malnutrition
-cor.test(bdhs_final$wealth_urban_rural, bdhs_final$stunted)
-cor.test(bdhs_final$wealth_urban_rural, bdhs_final$wasted)
-cor.test(bdhs_final$wealth_urban_rural, bdhs_final$underweight)
 
 # PART 3: OBJECTIVE 2 - HOUSEHOLD CONDITIONS AND MALNUTRITION
 cat("\n==================== OBJECTIVE 2A: HOUSEHOLD STRUCTURES (HEAD) ====================\n")

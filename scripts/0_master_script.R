@@ -5,6 +5,11 @@ library(tidyverse)
 library(anthro) # For calculation of Z-Scores
 library(car) # For VIF Analysis
 
+library(ggplot2) # For plots
+library(broom) # For tidy function
+library(pROC) # For ROC Curves
+library(vcd) # For Mosaic Plots
+
 # Run the data cleaning and processing
 source('scripts/1_data_cleaning_processing.R')
 

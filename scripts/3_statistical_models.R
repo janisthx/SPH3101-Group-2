@@ -1,7 +1,5 @@
 # 3. Statistical Modeling with Survey Weights
 
-cat("\n========== STATISTICAL MODELING WITH SURVEY WEIGHTS ==========\n")
-
 # PREPARE MODELING DATA
 
 # Center continuous variables for better interpretation
@@ -32,7 +30,7 @@ print(summary(stunting_m2)$coefficients)
 
 # Model 3: Number of children only
 stunting_m3 <- glm(stunted ~ children_c, data = bdhs_final, family = binomial)
-cat("\nModel 3 - Children under 5 only:\n")
+cat("\nModel 3 - Children number only:\n")
 print(summary(stunting_m3)$coefficients)
 
 # Model 4: Education only
@@ -221,7 +219,7 @@ print(lr_test3)
 
 # Test 4: Does children number improve wealth+education model?
 lr_test4 <- anova(stunting_m7, stunting_final, test = "Chisq")
-cat("\nAdding education to wealth+children model:\n")
+cat("\nAdding children number to wealth+education model:\n")
 print(lr_test4)
 
 cat("\nFor Underweight Model:")
@@ -248,7 +246,7 @@ print(lr_test4_uw)
 
 # Test 5: Does children number improve wealth+education model?
 lr_test5_uw <- anova(underweight_m8, underweight_final, test = "Chisq")
-cat("\nAdding children to wealth+education model:\n")
+cat("\nAdding children number to wealth+education model:\n")
 print(lr_test5_uw)
 
 # Test 6: Does head age improve children+education model?
@@ -297,4 +295,81 @@ print(underweight_aic)
 
 # Final models for stunting and underweight is the same: wealth + education + children_numbers
 
-# Forrest Plot, ROC curves
+# ========== Plots ==========
+# Forrest Plot
+stunting_coef <- tidy(stunting_final, conf.int = TRUE, exponentiate = TRUE)
+underweight_coef <- tidy(underweight_final, conf.int = TRUE, exponentiate = TRUE)
+
+stunting_coef$model <- "Stunting"
+underweight_coef$model <- "Underweight"
+forest_data <- rbind(stunting_coef, underweight_coef)
+forest_data <- forest_data[forest_data$term != "(Intercept)", ]  # Delete the intercept
+
+ggplot(forest_data, aes(x = estimate, y = term, color = model)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), 
+                 position = position_dodge(width = 0.5), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_x_log10() +
+  labs(title = "Forest Plot: Odds Ratios for Final Models",
+       x = "Odds Ratio (95% CI)", y = "Variables") +
+  theme_minimal() +
+  theme(legend.position = "top")
+
+# ROC Curves
+# Stunting Model
+stunting_models <- list(stunting_m1, stunting_m3, stunting_m4,
+                        stunting_full, stunting_final)
+stunting_names <- c("W", "CN", "Edu", "Full", "Final")
+
+par(mfrow = c(1, 2))
+
+# Stunting ROC
+plot(0, 0, type = "n", xlim = c(0, 1), ylim = c(0, 1), 
+     xlab = "1 - Specificity", ylab = "Sensitivity",
+     main = "ROC Curves - Stunting Models")
+abline(0, 1, lty = 2, col = "gray")
+
+colors <- rainbow(length(stunting_models))
+for(i in 1:length(stunting_models)) {
+  roc_obj <- roc(stunting_models[[i]]$y, fitted(stunting_models[[i]]), quiet = TRUE)
+  lines(1 - roc_obj$specificities, roc_obj$sensitivities, col = colors[i], lwd = 2)
+}
+legend("bottomright", legend = stunting_names, col = colors, lwd = 2, cex = 0.7)
+
+# Underweight ROC
+underweight_models <- list(underweight_m1, underweight_m3, underweight_m4,
+                           underweight_full, underweight_final)
+underweight_names <- c("W", "CN", "Edu", "Full", "Final")
+plot(0, 0, type = "n", xlim = c(0, 1), ylim = c(0, 1),
+     xlab = "1 - Specificity", ylab = "Sensitivity",
+     main = "ROC Curves - Underweight Models")
+abline(0, 1, lty = 2, col = "gray")
+
+for(i in 1:length(underweight_models)) {
+  roc_obj <- roc(underweight_models[[i]]$y, fitted(underweight_models[[i]]), quiet = TRUE)
+  lines(1 - roc_obj$specificities, roc_obj$sensitivities, col = colors[i], lwd = 2)
+}
+legend("bottomright", legend = stunting_names, col = colors, lwd = 2, cex = 0.7)
+
+# AIC Line Chart
+stunting_aic$order <- 1:nrow(stunting_aic)
+stunting_aic$outcome <- "Stunting"
+
+underweight_aic$order <- 1:nrow(underweight_aic)
+underweight_aic$outcome <- "Underweight"
+
+aic_combined <- rbind(stunting_aic, underweight_aic)
+
+ggplot(aic_combined, aes(x = order, y = AIC, color = outcome, group = outcome)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  scale_x_continuous(breaks = 1:11, 
+                     labels = c("W", "HH", "CN", "Edu", "HAge", 
+                                "W+CN", "W+HAge", "W+Edu", "CN+Edu", 
+                                "Full", "Final")) +
+  labs(title = "AIC Values Line Chart",
+       x = "Model", y = "AIC Value", color = "Outcome") +
+  theme_minimal() +
+  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
+
