@@ -1,11 +1,9 @@
 # 0. Master Script
 
 # Load all required packages
-library(tidyverse)
+library(tidyverse) # tidyverse includes ggplot2
 library(anthro) # For calculation of Z-Scores
 library(car) # For VIF Analysis
-
-library(ggplot2) # For plots
 library(broom) # For tidy function
 library(pROC) # For ROC Curves
 

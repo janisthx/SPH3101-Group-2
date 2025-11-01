@@ -84,59 +84,66 @@ cat("\n--- Chi-square Tests: Wealth Categories vs Malnutrition ---\n")
 # Stunting
 cat("\nStunting by wealth quintiles:\n")
 stunting_wealth_tab <- table(bdhs_final$stunted, bdhs_final$wealth_quintile)
-chi4 <- chisq.test(stunting_wealth_tab)
 print(prop.table(stunting_wealth_tab, 2) * 100)
+chi_stunting_wealth <- chisq.test(stunting_wealth_tab)
+cat("Chi-square test: χ² =", chi_stunting_wealth$statistic, ", p =", chi_stunting_wealth$p.value, "\n")
+
 ggplot(bdhs_final, aes(wealth_quintile, fill = factor(stunted))) +
   geom_bar(position = "fill") +
   scale_fill_manual(
     name = "",
     breaks = c("0","1"),
     labels = c("0" = "No Stunting", "1" = "Stunting"),
-    values = c("0" = "chartreuse4",  
-               "1" = "brown"), 
-    ) +
+    values = c("0" = "chartreuse4", "1" = "brown")
+  ) +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
-  labs(x = "Wealth quintile", y = "Percent within quintile")
+  labs(title = paste0("Stunting by Wealth Quintile (χ² = ", round(chi_stunting_wealth$statistic, 2), 
+                      ", p < 0.001)"),
+       x = "Wealth Quintile", y = "Percent within quintile")
 
 
 # Wasting
 cat("\nWasting by wealth quintiles:\n")
 wasting_wealth_tab <- table(bdhs_final$wasted, bdhs_final$wealth_quintile)
-wasting_wealth_tab
 print(prop.table(wasting_wealth_tab, 2) * 100)
+chi_wasting_wealth <- chisq.test(wasting_wealth_tab)
+cat("Chi-square test: χ² =", chi_wasting_wealth$statistic, ", p =", chi_wasting_wealth$p.value, "\n")
+
 ggplot(bdhs_final, aes(wealth_quintile, fill = factor(wasted))) +
   geom_bar(position = "fill") +
   scale_fill_manual(
     name = "",
     breaks = c("0","1"),
     labels = c("0" = "No Wasting", "1" = "Wasting"),
-    values = c("0" = "chartreuse4",  
-               "1" = "brown"), 
+    values = c("0" = "chartreuse4", "1" = "brown")
   ) +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
-  labs(x = "Wealth quintile", y = "Percent within quintile")
-chisq.test(wasting_wealth_tab)
+  labs(title = paste0("Wasting by Wealth Quintile (χ² = ", round(chi_wasting_wealth$statistic, 2), 
+                      ", p = ", round(chi_wasting_wealth$p.value, 4), ")"),
+       x = "Wealth Quintile", y = "Percent within quintile")
 
 # Underweight
 cat("\nUnderweight by wealth quintiles:\n")
 uw_wealth_tab <- table(bdhs_final$underweight, bdhs_final$wealth_quintile)
-uw_wealth_tab
 print(prop.table(uw_wealth_tab, 2) * 100)
+chi_uw_wealth <- chisq.test(uw_wealth_tab)
+cat("Chi-square test: χ² =", chi_uw_wealth$statistic, ", p =", chi_uw_wealth$p.value, "\n")
+
 ggplot(bdhs_final, aes(wealth_quintile, fill = factor(underweight))) +
   geom_bar(position = "fill") +
   scale_fill_manual(
     name = "",
     breaks = c("0","1"),
     labels = c("0" = "No Underweight", "1" = "Underweight"),
-    values = c("0" = "chartreuse4",  
-               "1" = "brown"), 
+    values = c("0" = "chartreuse4", "1" = "brown")
   ) +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
-  labs(x = "Wealth quintile", y = "Percent within quintile")
-chisq.test(uw_wealth_tab)
+  labs(title = paste0("Underweight by Wealth Quintile (χ² = ", round(chi_uw_wealth$statistic, 2), 
+                      ", p < 0.001)"),
+       x = "Wealth Quintile", y = "Percent within quintile")
 
 # PART 3: OBJECTIVE 2 - HOUSEHOLD CONDITIONS AND MALNUTRITION
 cat("\n==================== OBJECTIVE 2A: HOUSEHOLD STRUCTURES (HEAD) ====================\n")

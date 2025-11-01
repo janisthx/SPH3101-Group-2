@@ -185,13 +185,13 @@ print(summary(underweight_m9)$coefficients)
 underweight_full <- glm(underweight ~ head_age_c + household_members_c + wealth_c + children_c + average_parent_edu_c, 
                            data = bdhs_final, family = binomial)
 cat("\nFULL MODEL - All key variables:\n")
-print(summary(underweight_full))
+print(summary(underweight_full)$coefficients)
 
 # Final model with controls
 underweight_final <- glm(underweight ~ wealth_c + children_c + average_parent_edu_c, 
                             data = bdhs_final, family = binomial)
 cat("\nFINAL MODEL - With controls:\n")
-print(summary(underweight_final))
+print(summary(underweight_final)$coefficients)
 
 # PART B: TESTING VARIABLE IMPORTANCE
 
@@ -208,7 +208,7 @@ cat("\nAdding children to wealth model:\n")
 print(lr_test1)
 
 # Test 2: Does education improve wealth model?
-lr_test2 <- anova(stunting_m1, stunting_m7, test = "Chisq")
+lr_test2 <- anova(stunting_m1, stunting_m8, test = "Chisq")
 cat("\nAdding education to wealth model:\n")
 print(lr_test2)
 
@@ -249,10 +249,6 @@ lr_test5_uw <- anova(underweight_m8, underweight_final, test = "Chisq")
 cat("\nAdding children number to wealth+education model:\n")
 print(lr_test5_uw)
 
-# Test 6: Does head age improve children+education model?
-lr_test6_uw <- anova(underweight_m9, underweight_m10, test = "Chisq")
-cat("\nAdding head age to children+education model:\n")
-print(lr_test6_uw)
 
 # VIF analysis for stunting final model
 cat("\n=== VIF Analysis for Stunting Final Model ===\n")
