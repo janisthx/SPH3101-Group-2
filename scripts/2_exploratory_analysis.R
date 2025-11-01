@@ -59,18 +59,39 @@ cat("\n==================== OBJECTIVE 2A: HOUSEHOLD STRUCTURES (HEAD) ==========
 # T-test: Compare head age between malnourished vs normal
 cat("\n--- T-tests: Head Age by Malnutrition Status ---\n")
 
-# Stunting vs Normal - Head Age
+# Malnutrition
+malnutrition_head_age <- bdhs_final$head_age[bdhs_final$any_malnutrition == 1]
+no_malnutrition_head_age <- bdhs_final$head_age[bdhs_final$any_malnutrition == 0]
+t.test(malnutrition_head_age, no_malnutrition_head_age)
+
+df_malnutrition_head_age <- data.frame(
+  group = c(rep("Malnutrition", length(malnutrition_head_age)),
+            rep("No Malnutrition",  length(no_malnutrition_head_age))),
+  head_age = c(malnutrition_head_age, no_malnutrition_head_age)
+)
+
+ggplot(df_malnutrition_head_age, aes(group, head_age, fill = group)) +
+  geom_violin(trim = TRUE, width = 0.9, alpha = 0.35, color = NA) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
+  scale_x_discrete(limits = c("No Malnutrition", "Malnutrition")) + 
+  stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Malnutrition" = "brown")) +
+  labs(x = NULL, y = "Head age (months)", fill = NULL) +
+  theme_minimal() + theme(legend.position = "none")
+
+# Stunting
 stunted_head_age <- bdhs_final$head_age[bdhs_final$stunted == 1]
 normal_head_age <- bdhs_final$head_age[bdhs_final$any_malnutrition == 0]
 t_stunting_age <- t.test(stunted_head_age, normal_head_age)
 cat("t test: t =", t_stunting_age$statistic, ", p =", t_stunting_age$p.value, "\n")
 
-# Wasting vs Normal - Head Age
+# Wasting  
 wasted_head_age <- bdhs_final$head_age[bdhs_final$wasted == 1]
 t_wasting_age <- t.test(wasted_head_age, normal_head_age)
 cat("t test: t =", t_wasting_age$statistic, ", p =", t_wasting_age$p.value, "\n")
 
-# Underweight vs Normal - Head Age
+# Underweight  
 uw_head_age <- bdhs_final$head_age[bdhs_final$underweight == 1]
 t_uw_age <- t.test(uw_head_age, normal_head_age)
 cat("t test: t =", t_uw_age$statistic, ", p =", t_uw_age$p.value, "\n")
