@@ -366,7 +366,7 @@ p20 <- ggplot(edu_comparison, aes(x = group, y = education, fill = group)) +
   geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
   stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
-  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Stunted" = "brown")) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Malnutrition" = "brown")) +
   labs(title = paste0("Average Parent Education: Malnutrition vs Normal\n(t = ", 
                       round(t_test_avg$statistic, 2), ", p < 0.001)"),
        x = NULL, y = "Years of Education", fill = NULL) +
