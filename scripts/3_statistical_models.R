@@ -331,11 +331,16 @@ plot(0, 0, type = "n", xlim = c(0, 1), ylim = c(0, 1),
 abline(0, 1, lty = 2, col = "gray")
 
 colors <- rainbow(length(stunting_models))
+stunting_auc <- numeric(length(stunting_models))
+
 for(i in 1:length(stunting_models)) {
   roc_obj <- roc(stunting_models[[i]]$y, fitted(stunting_models[[i]]), quiet = TRUE)
   lines(1 - roc_obj$specificities, roc_obj$sensitivities, col = colors[i], lwd = 2)
+  stunting_auc[i] <- auc(roc_obj)
 }
-legend("bottomright", legend = stunting_names, col = colors, lwd = 2, cex = 0.7)
+
+stunting_legend <- paste0(stunting_names, " (AUC: ", round(stunting_auc, 3), ")")
+legend("bottomright", legend = stunting_legend, col = colors, lwd = 2, cex = 0.6)
 
 # Underweight ROC
 underweight_models <- list(underweight_m1, underweight_m3, underweight_m4,
@@ -346,11 +351,15 @@ plot(0, 0, type = "n", xlim = c(0, 1), ylim = c(0, 1),
      main = "ROC Curves - Underweight Models")
 abline(0, 1, lty = 2, col = "gray")
 
+underweight_auc <- numeric(length(underweight_models))
+
 for(i in 1:length(underweight_models)) {
   roc_obj <- roc(underweight_models[[i]]$y, fitted(underweight_models[[i]]), quiet = TRUE)
   lines(1 - roc_obj$specificities, roc_obj$sensitivities, col = colors[i], lwd = 2)
+  underweight_auc[i] <- auc(roc_obj)
 }
-legend("bottomright", legend = stunting_names, col = colors, lwd = 2, cex = 0.7)
+underweight_legend <- paste0(stunting_names, " (AUC: ", round(underweight_auc, 3), ")")
+legend("bottomright", legend = underweight_legend, col = colors, lwd = 2, cex = 0.6)
 
 # AIC Line Chart
 stunting_aic$order <- 1:nrow(stunting_aic)
