@@ -1,4 +1,3 @@
-
 # 1. Data Cleaning and Processing with Survey Weights
 
 # Read data
@@ -212,29 +211,19 @@ bdhs_clean <- bdhs_clean %>%
   mutate(
     # Stunting (HAZ < -2)
     stunted = ifelse(haz < -2, 1, 0),
-    severely_stunted = ifelse(haz < -3, 1, 0),
-    
+
     # Wasting (WHZ < -2)
     wasted = ifelse(whz < -2, 1, 0),
-    severely_wasted = ifelse(whz < -3, 1, 0),
-    
+
     # Underweight (WAZ < -2)
     underweight = ifelse(waz < -2, 1, 0),
-    severely_underweight = ifelse(waz < -3, 1, 0),
-    
+
     # Any malnutrition (composite outcome)
     any_malnutrition = case_when(
       stunted == 1 | wasted == 1 | underweight == 1 ~ 1,
       stunted == 0 & wasted == 0 & underweight == 0 ~ 0,
       TRUE ~ NA_real_
     ),
-    
-    # Combined severe malnutrition
-    severe_malnutrition = case_when(
-      severely_stunted == 1 | severely_wasted == 1 | severely_underweight == 1 ~ 1,
-      severely_stunted == 0 & severely_wasted == 0 & severely_underweight == 0 ~ 0,
-      TRUE ~ NA_real_
-    )
   )
 
 # Final Dataset Preparation
@@ -258,8 +247,7 @@ final_vars <- c(
   
   # Malnutrition outcomes
   "stunted", "wasted", "underweight", "any_malnutrition",
-  "severely_stunted", "severely_wasted", "severely_underweight", "severe_malnutrition",
-  
+
   # Other demographics
   "head_sex", "head_age", "relationship"
 )
@@ -277,6 +265,6 @@ cat(paste("Records with complete malnutrition data:",
           sum(complete.cases(bdhs_final[c("stunted", "wasted", "underweight")])), "\n\n"))
 
 # Save cleaned dataset
-write.csv(bdhs_final, "data/bdhs_cleaned_final.csv", row.names = FALSE)
-cat("Cleaned data saved as 'bdhs_cleaned_final.csv'\n")
+write.csv(bdhs_final, "data/bdhs_final.csv", row.names = FALSE)
+cat("Cleaned data saved as 'bdhs_final.csv'\n")
 

@@ -19,5 +19,4 @@ source('scripts/3_statistical_models.R')
 # Run the interaction analysis of residence vs. all variables in the final model
 source('scripts/4_interaction_analysis.R')
 
-# Run the visualization codes
-# source('scripts/5_visualization.R')
+# Visualization codes already in separate scripts

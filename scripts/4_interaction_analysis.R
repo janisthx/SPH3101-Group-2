@@ -48,7 +48,7 @@ interaction_aic <- data.frame(
   order = 1:5
 )
 
-ggplot(interaction_aic, aes(x = order, y = AIC)) +
+p_interactionaic <- ggplot(interaction_aic, aes(x = order, y = AIC)) +
   geom_line(size = 1.2, color = "steelblue") +
   geom_point(size = 3, color = "steelblue") +
   scale_x_continuous(breaks = 1:5, 
@@ -56,9 +56,9 @@ ggplot(interaction_aic, aes(x = order, y = AIC)) +
                                 "W&Res", "CN&Res", "Edu&Res")) +
   labs(title = "AIC Comparison: Residence Interaction Effects on Stunting",
        x = "Model", y = "AIC Value") +
-  theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
+if (!dir.exists("plots/model_building")) dir.create("plots/model_building", recursive = TRUE)
+ggsave("plots/model_building/04_aic_line_chart(interaction_with_residence).png", p_interactionaic, width = 10, height = 6, dpi = 300)
 
 # Try the Linear Model (Just a tryout, can mention in the presentation if there's time)
 cat('Try the Linear Model (Z-Scores on the variables):')

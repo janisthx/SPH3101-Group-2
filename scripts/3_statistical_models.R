@@ -8,11 +8,9 @@ bdhs_final$household_members_c <- scale(bdhs_final$household_members, center = T
 bdhs_final$children_c <- scale(bdhs_final$total_children_born, center = TRUE, scale = FALSE)
 bdhs_final$average_parent_edu_c <- scale(bdhs_final$average_parent_edu, center = TRUE, scale = FALSE)
 bdhs_final$head_age_c <- scale(bdhs_final$head_age, center = TRUE, scale = FALSE)
-
-write.csv(bdhs_final, "data/bdhs_cleaned_final.csv", row.names = FALSE)
+write.csv(bdhs_final, "data/bdhs_final.csv", row.names = FALSE)
 
 # PART A: BUILD MODELS BASED ON OBJECTIVES
-
 cat("\n==================== MODEL BUILDING ====================\n")
 
 # =========== STUNTING MODELS ===========
@@ -132,7 +130,6 @@ print(summary(wasting_full)$coefficients)
 
 # Not a single coefficient is significant, wasting is hard to build model
 
-
 # =========== UNDERWEIGHT MODELS ===========
 cat("\n--- UNDERWEIGHT MODELS ---\n")
 
@@ -194,7 +191,6 @@ cat("\nFINAL MODEL - With controls:\n")
 print(summary(underweight_final)$coefficients)
 
 # PART B: TESTING VARIABLE IMPORTANCE
-
 cat("\n==================== VARIABLE IMPORTANCE ====================\n")
 
 # Likelihood ratio tests for nested models
@@ -291,7 +287,8 @@ print(underweight_aic)
 
 # Final models for stunting and underweight is the same: wealth + education + children_numbers
 
-# ========== Plots ==========
+# ==================== Plots ====================
+if (!dir.exists("plots/model_building")) dir.create("plots/model_building", recursive = TRUE)
 # Forrest Plot
 stunting_coef <- tidy(stunting_final, conf.int = TRUE, exponentiate = TRUE)
 underweight_coef <- tidy(underweight_final, conf.int = TRUE, exponentiate = TRUE)
@@ -301,7 +298,7 @@ underweight_coef$model <- "Underweight"
 forest_data <- rbind(stunting_coef, underweight_coef)
 forest_data <- forest_data[forest_data$term != "(Intercept)", ]  # Delete the intercept
 
-ggplot(forest_data, aes(x = estimate, y = term, color = model)) +
+p_forest <- ggplot(forest_data, aes(x = estimate, y = term, color = model)) +
   geom_point(position = position_dodge(width = 0.5), size = 3) +
   geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), 
                  position = position_dodge(width = 0.5), height = 0.2) +
@@ -309,8 +306,8 @@ ggplot(forest_data, aes(x = estimate, y = term, color = model)) +
   scale_x_log10() +
   labs(title = "Forest Plot: Odds Ratios for Final Models",
        x = "Odds Ratio (95% CI)", y = "Variables") +
-  theme_minimal() +
   theme(legend.position = "top")
+ggsave("plots/model_building/01_forest_plot_final_models.png", p_forest, width = 10, height = 6, dpi = 300)
 
 # ROC Curves
 # Stunting Model
@@ -318,6 +315,7 @@ stunting_models <- list(stunting_m1, stunting_m3, stunting_m4,
                         stunting_full, stunting_final)
 stunting_names <- c("W", "CN", "Edu", "Full", "Final")
 
+png("plots/model_building/02_roc_curves_comparison.png", width = 12, height = 6, units = "in", res = 300)
 par(mfrow = c(1, 2))
 
 # Stunting ROC
@@ -357,6 +355,8 @@ for(i in 1:length(underweight_models)) {
 underweight_legend <- paste0(stunting_names, " (AUC: ", round(underweight_auc, 3), ")")
 legend("bottomright", legend = underweight_legend, col = colors, lwd = 2, cex = 0.6)
 
+dev.off()
+
 # AIC Line Chart
 stunting_aic$order <- 1:nrow(stunting_aic)
 stunting_aic$outcome <- "Stunting"
@@ -366,7 +366,7 @@ underweight_aic$outcome <- "Underweight"
 
 aic_combined <- rbind(stunting_aic, underweight_aic)
 
-ggplot(aic_combined, aes(x = order, y = AIC, color = outcome, group = outcome)) +
+p_aic <- ggplot(aic_combined, aes(x = order, y = AIC, color = outcome, group = outcome)) +
   geom_line(size = 1.2) +
   geom_point(size = 3) +
   scale_x_continuous(breaks = 1:11, 
@@ -375,6 +375,5 @@ ggplot(aic_combined, aes(x = order, y = AIC, color = outcome, group = outcome)) 
                                 "Full", "Final")) +
   labs(title = "AIC Values Line Chart",
        x = "Model", y = "AIC Value", color = "Outcome") +
-  theme_minimal() +
   theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
-
+ggsave("plots/model_building/03_aic_line_chart.png", p_aic, width = 10, height = 6, dpi = 300)
