@@ -353,6 +353,9 @@ p19 <- ggplot(bdhs_final, aes(wealth_quintile, fill = children_cat)) +
 ggsave("plots/exploratory_analysis/19_wealth_children_number.png", p19, width = 8, height = 6, dpi = 300)
 
 # Part 5: Objective 4: Parent Education and malnutrition
+mal_avg_edu <- bdhs_final$average_parent_edu[bdhs_final$any_malnutrition == 1]
+normal_avg_edu <- bdhs_final$average_parent_edu[bdhs_final$any_malnutrition == 0]
+
 edu_comparison <- data.frame(
   education = c(mal_avg_edu, normal_avg_edu),
   group = c(rep("Malnutrition", length(mal_avg_edu)), 
