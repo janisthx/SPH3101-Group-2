@@ -370,6 +370,7 @@ p20 <- ggplot(edu_comparison, aes(x = group, y = education, fill = group)) +
   stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
   scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Malnutrition" = "brown")) +
+  scale_x_discrete(limits = c("No Malnutrition", "Malnutrition")) +
   labs(title = paste0("Average Parent Education: Malnutrition vs Normal\n(t = ", 
                       round(t_test_avg$statistic, 2), ", p < 0.001)"),
        x = NULL, y = "Years of Education", fill = NULL) +
