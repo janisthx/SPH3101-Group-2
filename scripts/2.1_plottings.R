@@ -329,12 +329,12 @@ p17 <- ggplot(df_uw_child, aes(group, children, fill = group)) +
 ggsave("plots/exploratory_analysis/17_children_number_underweight.png", p17, width = 8, height = 6, dpi = 300)
 
 # Part 4: Objective 3: Wealth & Household correlation
-# WEalth & Household Numbers
+# Wealth & Household Numbers
 wealth_hh_table <- table(bdhs_final$wealth_quintile, bdhs_final$household_size_cat)
 wealth_hh_test <- chisq.test(wealth_hh_table)
 p18 <- ggplot(bdhs_final, aes(wealth_quintile, fill = household_size_cat)) +
   geom_bar(position = "fill") +
-  scale_fill_brewer(palette = "Set2", name = "Household Size") +
+  scale_fill_brewer(palette = "YlOrRd", name = "Household Size") +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
   labs(title = paste0("Household Size by Wealth Quintile (χ² = ", 
@@ -347,7 +347,7 @@ wealth_child_table <- table(bdhs_final$wealth_quintile, bdhs_final$children_cat)
 wealth_child_test <- chisq.test(wealth_child_table)
 p19 <- ggplot(bdhs_final, aes(wealth_quintile, fill = children_cat)) +
   geom_bar(position = "fill") +
-  scale_fill_brewer(palette = "Set2", name = "Children Category") +
+  scale_fill_brewer(palette = "YlOrRd", name = "Children Category") +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
   labs(title = paste0("Children Number by Wealth Quintile (χ² = ", 
