@@ -197,6 +197,9 @@ data_mal_rel <- bdhs_final[!is.na(bdhs_final$relationship), ]
 chi_mal_rel <- chisq.test(table(data_mal_rel$any_malnutrition, data_mal_rel$relationship))
 p11 <- ggplot(data_mal_rel, aes(relationship, fill = factor(any_malnutrition))) +
   geom_bar(position = "fill") +
+  scale_x_discrete(labels = c(
+    "Traditional"     = "Traditional",
+    "Non_traditional" = "Non-Traditional")) +
   scale_fill_manual(
     name = "",
     breaks = c("0","1"),
