@@ -194,12 +194,12 @@ t_stunting_child <- t.test(stunted_children, normal_children)
 cat("t test: t =", t_stunting_child$statistic, ", p =", t_stunting_child$p.value, "\n")
 
 # Wasting
-wasted_children <- bdhs_final$births_last5y[bdhs_final$wasted == 1]
+wasted_children <- bdhs_final$total_children_born[bdhs_final$wasted == 1]
 t_wasting_child <- t.test(wasted_children, normal_children)
 cat("t test: t =", t_wasting_child$statistic, ", p =", t_wasting_child$p.value, "\n")
 
 # Underweight
-uw_children <- bdhs_final$births_last5y[bdhs_final$underweight == 1]
+uw_children <- bdhs_final$total_children_born[bdhs_final$underweight == 1]
 t_uw_child <- t.test(uw_children, normal_children)
 cat("t test: t =", t_uw_child$statistic, ", p =", t_uw_child$p.value, "\n")
 
