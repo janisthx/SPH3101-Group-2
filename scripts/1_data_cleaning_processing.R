@@ -119,10 +119,10 @@ bdhs_clean <- bdhs_interest %>%
     
     # Number of children categories
     children_cat = case_when(
-      births_last5y == 0 ~ "No children",
-      births_last5y == 1 ~ "1 child",
-      births_last5y == 2 ~ "2 children",
-      births_last5y >= 3 ~ "3+ children",
+      total_children_born == 0 ~ "No children",
+      total_children_born == 1 ~ "1 child",
+      total_children_born == 2 ~ "2 children",
+      total_children_born >= 3 ~ "3+ children",
       TRUE ~ NA_character_
     ),
     

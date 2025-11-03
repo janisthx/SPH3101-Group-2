@@ -194,12 +194,12 @@ t_stunting_child <- t.test(stunted_children, normal_children)
 cat("t test: t =", t_stunting_child$statistic, ", p =", t_stunting_child$p.value, "\n")
 
 # Wasting
-wasted_children <- bdhs_final$births_last5y[bdhs_final$wasted == 1]
+wasted_children <- bdhs_final$total_children_born[bdhs_final$wasted == 1]
 t_wasting_child <- t.test(wasted_children, normal_children)
 cat("t test: t =", t_wasting_child$statistic, ", p =", t_wasting_child$p.value, "\n")
 
 # Underweight
-uw_children <- bdhs_final$births_last5y[bdhs_final$underweight == 1]
+uw_children <- bdhs_final$total_children_born[bdhs_final$underweight == 1]
 t_uw_child <- t.test(uw_children, normal_children)
 cat("t test: t =", t_uw_child$statistic, ", p =", t_uw_child$p.value, "\n")
 
@@ -258,6 +258,12 @@ print(prop.table(residence_table) * 100)
 
 # Malnutrition by residence
 cat("\n--- Malnutrition by Residence ---\n")
+malnutrition_residence <- table(bdhs_final$any_malnutrition, bdhs_final$residence)
+cat("\nMalnutrition prevalence:\n")
+print(prop.table(malnutrition_residence, 2) * 100)
+malnutrition_res_test <- chisq.test(malnutrition_residence)
+cat("Chi-square test: X² =", malnutrition_res_test$statistic, ", p =", malnutrition_res_test$p.value, "\n")
+
 stunting_residence <- table(bdhs_final$stunted, bdhs_final$residence)
 cat("\nStunting prevalence:\n")
 print(prop.table(stunting_residence, 2) * 100)

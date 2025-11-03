@@ -245,6 +245,7 @@ lr_test5_uw <- anova(underweight_m8, underweight_final, test = "Chisq")
 cat("\nAdding children number to wealth+education model:\n")
 print(lr_test5_uw)
 
+# ==================== VIF VALUES FOR ALL VARIABLES ====================
 
 # VIF analysis for stunting final model
 cat("\n=== VIF Analysis for Stunting Final Model ===\n")
