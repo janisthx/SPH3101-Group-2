@@ -258,6 +258,12 @@ print(prop.table(residence_table) * 100)
 
 # Malnutrition by residence
 cat("\n--- Malnutrition by Residence ---\n")
+malnutrition_residence <- table(bdhs_final$any_malnutrition, bdhs_final$residence)
+cat("\nMalnutrition prevalence:\n")
+print(prop.table(malnutrition_residence, 2) * 100)
+malnutrition_res_test <- chisq.test(malnutrition_residence)
+cat("Chi-square test: X² =", malnutrition_res_test$statistic, ", p =", malnutrition_res_test$p.value, "\n")
+
 stunting_residence <- table(bdhs_final$stunted, bdhs_final$residence)
 cat("\nStunting prevalence:\n")
 print(prop.table(stunting_residence, 2) * 100)

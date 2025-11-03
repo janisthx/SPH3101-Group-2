@@ -197,6 +197,9 @@ data_mal_rel <- bdhs_final[!is.na(bdhs_final$relationship), ]
 chi_mal_rel <- chisq.test(table(data_mal_rel$any_malnutrition, data_mal_rel$relationship))
 p11 <- ggplot(data_mal_rel, aes(relationship, fill = factor(any_malnutrition))) +
   geom_bar(position = "fill") +
+  scale_x_discrete(labels = c(
+    "Traditional"     = "Traditional",
+    "Non_traditional" = "Non-Traditional")) +
   scale_fill_manual(
     name = "",
     breaks = c("0","1"),
@@ -326,12 +329,12 @@ p17 <- ggplot(df_uw_child, aes(group, children, fill = group)) +
 ggsave("plots/exploratory_analysis/17_children_number_underweight.png", p17, width = 8, height = 6, dpi = 300)
 
 # Part 4: Objective 3: Wealth & Household correlation
-# WEalth & Household Numbers
+# Wealth & Household Numbers
 wealth_hh_table <- table(bdhs_final$wealth_quintile, bdhs_final$household_size_cat)
 wealth_hh_test <- chisq.test(wealth_hh_table)
 p18 <- ggplot(bdhs_final, aes(wealth_quintile, fill = household_size_cat)) +
   geom_bar(position = "fill") +
-  scale_fill_brewer(palette = "Set2", name = "Household Size") +
+  scale_fill_brewer(palette = "YlOrRd", name = "Household Size") +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
   labs(title = paste0("Household Size by Wealth Quintile (χ² = ", 
@@ -344,7 +347,7 @@ wealth_child_table <- table(bdhs_final$wealth_quintile, bdhs_final$children_cat)
 wealth_child_test <- chisq.test(wealth_child_table)
 p19 <- ggplot(bdhs_final, aes(wealth_quintile, fill = children_cat)) +
   geom_bar(position = "fill") +
-  scale_fill_brewer(palette = "Set2", name = "Children Category") +
+  scale_fill_brewer(palette = "YlOrRd", name = "Children Category") +
   scale_x_discrete(limits = c("Poorest","Poorer","Middle","Richer","Richest")) +
   scale_y_continuous(labels = scales::percent) +
   labs(title = paste0("Children Number by Wealth Quintile (χ² = ", 
@@ -353,6 +356,9 @@ p19 <- ggplot(bdhs_final, aes(wealth_quintile, fill = children_cat)) +
 ggsave("plots/exploratory_analysis/19_wealth_children_number.png", p19, width = 8, height = 6, dpi = 300)
 
 # Part 5: Objective 4: Parent Education and malnutrition
+mal_avg_edu <- bdhs_final$average_parent_edu[bdhs_final$any_malnutrition == 1]
+normal_avg_edu <- bdhs_final$average_parent_edu[bdhs_final$any_malnutrition == 0]
+
 edu_comparison <- data.frame(
   education = c(mal_avg_edu, normal_avg_edu),
   group = c(rep("Malnutrition", length(mal_avg_edu)), 
@@ -363,7 +369,8 @@ p20 <- ggplot(edu_comparison, aes(x = group, y = education, fill = group)) +
   geom_boxplot(width = 0.15, outlier.shape = NA, alpha = 0.7) +
   stat_summary(fun = mean, geom = "point", size = 2, shape = 21, fill = "white") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.06) +
-  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Stunted" = "brown")) +
+  scale_fill_manual(values = c("No Malnutrition" = "chartreuse4", "Malnutrition" = "brown")) +
+  scale_x_discrete(limits = c("No Malnutrition", "Malnutrition")) +
   labs(title = paste0("Average Parent Education: Malnutrition vs Normal\n(t = ", 
                       round(t_test_avg$statistic, 2), ", p < 0.001)"),
        x = NULL, y = "Years of Education", fill = NULL) +
